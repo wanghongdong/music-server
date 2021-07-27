@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.music.dao.ex.CommentExMapper">
+    <resultMap id="BaseResultMap" type="com.example.music.domain.Comment"
+               extends="com.example.music.dao.CommentMapper.BaseResultMap"/>
+    <sql id="Base_Column_List">
+        <include refid="com.example.music.dao.CommentMapper.Base_Column_List"/>
+    </sql>
+    <select id="allComment" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment
+    </select>
+    <select id="commentOfSongId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment
+        where song_id = #{songId, jdbcType=INTEGER}
+    </select>
+    <select id="commentOfSongListId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment
+        where song_list_id = #{songListId, jdbcType=INTEGER}
+    </select>
+</mapper>

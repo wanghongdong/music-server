@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.music.dao.ex.RankExMapper">
+    <resultMap id="BaseResultMap" type="com.example.music.domain.Rank"
+               extends="com.example.music.dao.RankMapper.BaseResultMap"/>
+
+    <select id="selectScoreSum" resultType="java.lang.Integer">
+        SELECT COALESCE(sum(score), 0) as score
+        from rank
+        where song_list_id = #{songListId};
+    </select>
+
+    <select id="selectRankNum" resultType="java.lang.Integer">
+        SELECT COALESCE(count(id), 0) as num
+        from rank
+        where song_list_id = #{songListId};
+    </select>
+</mapper>

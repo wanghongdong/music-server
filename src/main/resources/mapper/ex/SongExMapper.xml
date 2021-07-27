@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.music.dao.ex.SongExMapper">
+    <resultMap id="BaseResultMap" type="com.example.music.domain.Song"
+               extends="com.example.music.dao.SongMapper.BaseResultMap"/>
+    <resultMap id="ResultMapWithBLOBs" type="com.example.music.domain.Song"
+               extends="com.example.music.dao.SongMapper.ResultMapWithBLOBs"/>
+    <sql id="Base_Column_List">
+        <include refid="com.example.music.dao.SongMapper.Base_Column_List"/>
+    </sql>
+    <sql id="All_Column_List">
+        <include refid="Base_Column_List"/>,
+        <include refid="com.example.music.dao.SongMapper.Blob_Column_List"/>
+    </sql>
+    <select id="allSong" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="All_Column_List"/>
+        from song
+    </select>
+    <select id="songOfSingerId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="All_Column_List"/>
+        from song
+        where singer_id = #{singerId, jdbcType=INTEGER}
+    </select>
+    <select id="songOfSingerName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="All_Column_List"/>
+        from song
+        where exists(select 1 from singer where singer.id = singer_id and singer.name like concat(#{singerName}, '%'))
+    </select>
+    <select id="songOfName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="All_Column_List"/>
+        from song
+        where name like concat(#{name, jdbcType=VARCHAR}, '%')
+    </select>
+</mapper>

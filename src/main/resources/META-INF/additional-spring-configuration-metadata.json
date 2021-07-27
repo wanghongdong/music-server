@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "mybatis.generator.targetProject",
+      "type": "java.lang.String",
+      "description": "Description for mybatis.generator.targetProject."
+  }
+] }

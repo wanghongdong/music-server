@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.music.dao.ex.SingerExMapper">
+    <resultMap id="BaseResultMap" type="com.example.music.domain.Singer"
+               extends="com.example.music.dao.SingerMapper.BaseResultMap"/>
+    <sql id="Base_Column_List">
+        <include refid="com.example.music.dao.SingerMapper.Base_Column_List"/>
+    </sql>
+    <select id="allSinger" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from singer
+    </select>
+    <select id="singerOfName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from singer
+        where name like concat(#{name}, '%')
+    </select>
+    <select id="singerOfSex" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from singer
+        where sex = #{sex, jdbcType=INTEGER}
+    </select>
+</mapper>

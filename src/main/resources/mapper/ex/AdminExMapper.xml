@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.music.dao.ex.AdminExMapper">
+    <resultMap id="BaseResultMap" type="com.example.music.domain.Admin"
+               extends="com.example.music.dao.AdminMapper.BaseResultMap"/>
+
+    <sql id="Base_Column_List">
+        <include refid="com.example.music.dao.AdminMapper.Base_Column_List"/>
+    </sql>
+
+    <select id="verifyPassword" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM admin
+        where name = #{0}
+          and password = #{1};
+    </select>
+</mapper>
