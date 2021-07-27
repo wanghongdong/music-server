@@ -2,7 +2,6 @@
 <!DOCTYPE generatorConfiguration
         PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
-<!-- 配置 tableName,使用 Run As Maven build 生成 dao 层 -->
 <generatorConfiguration>
     <!-- 配置文件路径 -->
     <properties resource="application.properties"/>
@@ -19,7 +18,7 @@
         <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
         <plugin type="com.generator.OverwritePlugin"/>
 
-        <!--关闭注释 -->
+        <!--注释 -->
         <commentGenerator type="com.generator.MyCommentGenerator">
             <property name="suppressAllComments" value="false"/><!-- 是否取消注释 -->
             <property name="suppressDate" value="false"/> <!-- 是否生成注释代时间戳 -->

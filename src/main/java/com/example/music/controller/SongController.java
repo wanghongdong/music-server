@@ -23,43 +23,12 @@ import java.io.IOException;
 import java.util.Date;
 
 @RestController
-@Controller
 public class SongController {
 
     @Autowired
     private SongServiceImpl songService;
 
-    @Bean
-    public MultipartConfigElement multipartConfigElement() {
-        MultipartConfigFactory factory = new MultipartConfigFactory();
-        //文件最大10M,DataUnit提供5中类型B,KB,MB,GB,TB
-        factory.setMaxFileSize(DataSize.of(10, DataUnit.MEGABYTES));
-        /// 设置总上传数据总大小10M
-        factory.setMaxRequestSize(DataSize.of(10, DataUnit.MEGABYTES));
-        return factory.createMultipartConfig();
-    }
-
-    @Configuration
-    public class MyPicConfig implements WebMvcConfigurer {
-        @Override
-        public void addResourceHandlers(ResourceHandlerRegistry registry) {
-            String os = System.getProperty("os.name");
-            if (os.toLowerCase().startsWith("win")) { // windos系统
-                registry.addResourceHandler("/img/songPic/**")
-                        .addResourceLocations("file:" + Constants.RESOURCE_WIN_PATH + "\\img\\songPic\\");
-                registry.addResourceHandler("/song/**")
-                        .addResourceLocations("file:" + Constants.RESOURCE_WIN_PATH + "\\song\\");
-            } else { // MAC、Linux系统
-                registry.addResourceHandler("/img/songPic/**")
-                        .addResourceLocations("file:" + Constants.RESOURCE_MAC_PATH + "/img/songPic/");
-                registry.addResourceHandler("/song/**")
-                        .addResourceLocations("file:" + Constants.RESOURCE_MAC_PATH + "/song/");
-            }
-        }
-    }
-
     //    添加歌曲
-    @ResponseBody
     @RequestMapping(value = "/song/add", method = RequestMethod.POST)
     public Object addSong(HttpServletRequest req, @RequestParam("file") MultipartFile mpfile) {
         JSONObject jsonObject = new JSONObject();
@@ -156,7 +125,6 @@ public class SongController {
     }
 
     //    更新歌曲信息
-    @ResponseBody
     @RequestMapping(value = "/song/update", method = RequestMethod.POST)
     public Object updateSongMsg(HttpServletRequest req) {
         JSONObject jsonObject = new JSONObject();
@@ -187,7 +155,6 @@ public class SongController {
     }
 
     //    更新歌曲图片
-    @ResponseBody
     @RequestMapping(value = "/song/img/update", method = RequestMethod.POST)
     public Object updateSongPic(@RequestParam("file") MultipartFile urlFile, @RequestParam("id") int id) {
         JSONObject jsonObject = new JSONObject();
@@ -232,7 +199,6 @@ public class SongController {
     }
 
     //    更新歌曲URL
-    @ResponseBody
     @RequestMapping(value = "/song/url/update", method = RequestMethod.POST)
     public Object updateSongUrl(@RequestParam("file") MultipartFile urlFile, @RequestParam("id") int id) {
         JSONObject jsonObject = new JSONObject();

@@ -18,7 +18,6 @@ public class AdminController {
     private AdminServiceImpl adminService;
 
     //判断是否登录成功
-    @ResponseBody
     @RequestMapping(value = "/login/status", method = RequestMethod.POST)
     public Object loginStatus(HttpServletRequest req, HttpSession session) {
         JSONObject jsonObject = new JSONObject();

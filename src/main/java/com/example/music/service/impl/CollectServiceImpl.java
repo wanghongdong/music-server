@@ -35,16 +35,12 @@ public class CollectServiceImpl implements CollectService {
     }
 
     @Override
-    public List<Collect> allCollect()
-
-    {
+    public List<Collect> allCollect() {
         return collectExMapper.allCollect();
     }
 
     @Override
-    public List<Collect> collectionOfUser(Integer userId)
-
-    {
+    public List<Collect> collectionOfUser(Integer userId) {
         return collectExMapper.collectionOfUser(userId);
     }
 }

@@ -15,14 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @RestController
-@Controller
 public class CollectController {
 
     @Autowired
     private CollectServiceImpl collectService;
 
-    //    添加收藏的歌曲
-    @ResponseBody
+    //添加收藏的歌曲
     @RequestMapping(value = "/collection/add", method = RequestMethod.POST)
     public Object addCollection(HttpServletRequest req) {
 
@@ -84,7 +82,6 @@ public class CollectController {
     }
 
     //    更新收藏
-    @ResponseBody
     @RequestMapping(value = "/collection/update", method = RequestMethod.POST)
     public Object updateCollectMsg(HttpServletRequest req) {
         JSONObject jsonObject = new JSONObject();

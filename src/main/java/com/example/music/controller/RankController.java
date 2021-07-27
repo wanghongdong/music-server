@@ -13,14 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@Controller
 public class RankController {
 
     @Autowired
     private RankServiceImpl rankService;
 
 //    提交评分
-    @ResponseBody
     @RequestMapping(value = "/rank/add", method = RequestMethod.POST)
     public Object addRank(HttpServletRequest req){
         JSONObject jsonObject = new JSONObject();

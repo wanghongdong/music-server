@@ -25,26 +25,8 @@ public class ConsumerController {
     @Autowired
     private ConsumerServiceImpl consumerService;
 
-    @Configuration
-    public static class MyPicConfig implements WebMvcConfigurer {
-        @Override
-        public void addResourceHandlers(ResourceHandlerRegistry registry) {
-            String os = System.getProperty("os.name");
-            String resourceLocations = "file:%s/img/avatarImages/";
-            if (os.toLowerCase().startsWith("win")) {
-                // windows系统
-                resourceLocations = String.format(resourceLocations, Constants.RESOURCE_WIN_PATH);
-            } else {
-                // MAC、Linux系统
-                resourceLocations = String.format(resourceLocations, Constants.RESOURCE_MAC_PATH);
-            }
-            registry.addResourceHandler("/img/avatarImages/**")
-                    .addResourceLocations(resourceLocations);
-        }
-    }
 
     //    添加用户
-    @ResponseBody
     @RequestMapping(value = "/user/add", method = RequestMethod.POST)
     public Object addUser(HttpServletRequest req) {
         JSONObject jsonObject = new JSONObject();
@@ -105,7 +87,6 @@ public class ConsumerController {
     }
 
     //    判断是否登录成功
-    @ResponseBody
     @RequestMapping(value = "/user/login/status", method = RequestMethod.POST)
     public Object loginStatus(HttpServletRequest req, HttpSession session) {
 
@@ -149,7 +130,6 @@ public class ConsumerController {
     }
 
     //    更新用户信息
-    @ResponseBody
     @RequestMapping(value = "/user/update", method = RequestMethod.POST)
     public Object updateUserMsg(HttpServletRequest req) {
         JSONObject jsonObject = new JSONObject();
@@ -203,7 +183,6 @@ public class ConsumerController {
     }
 
     //    更新用户头像
-    @ResponseBody
     @RequestMapping(value = "/user/avatar/update", method = RequestMethod.POST)
     public Object updateUserPic(@RequestParam("file") MultipartFile avatarFile, @RequestParam("id") int id) {
         JSONObject jsonObject = new JSONObject();
