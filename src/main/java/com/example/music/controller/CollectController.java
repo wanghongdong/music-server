@@ -15,13 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @RestController
+@RequestMapping("/collection")
 public class CollectController {
 
     @Autowired
     private CollectServiceImpl collectService;
 
     //添加收藏的歌曲
-    @RequestMapping(value = "/collection/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Object addCollection(HttpServletRequest req) {
 
         JSONObject jsonObject = new JSONObject();
@@ -61,20 +62,20 @@ public class CollectController {
     }
 
     //    返回所有用户收藏列表
-    @RequestMapping(value = "/collection", method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     public Object allCollection() {
         return collectService.allCollect();
     }
 
     //    返回的指定用户ID收藏列表
-    @RequestMapping(value = "/collection/detail", method = RequestMethod.GET)
+    @RequestMapping(value = "/detail", method = RequestMethod.GET)
     public Object collectionOfUser(HttpServletRequest req) {
         String userId = req.getParameter("userId");
         return collectService.collectionOfUser(Integer.parseInt(userId));
     }
 
     //    删除收藏的歌曲
-    @RequestMapping(value = "/collection/delete", method = RequestMethod.GET)
+    @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public Object deleteCollection(HttpServletRequest req) {
         String user_id = req.getParameter("userId").trim();
         String song_id = req.getParameter("songId").trim();
@@ -82,7 +83,7 @@ public class CollectController {
     }
 
     //    更新收藏
-    @RequestMapping(value = "/collection/update", method = RequestMethod.POST)
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
     public Object updateCollectMsg(HttpServletRequest req) {
         JSONObject jsonObject = new JSONObject();
         String id = req.getParameter("id").trim();
