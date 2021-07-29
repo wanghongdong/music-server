@@ -10,7 +10,7 @@
         SELECT count(1)
         FROM consumer
         where username = #{username}
-          and password = #{password};
+          and password = #{password}
     </select>
     <select id="existUsername" resultType="java.lang.Integer" parameterType="java.lang.String">
         select count(1)

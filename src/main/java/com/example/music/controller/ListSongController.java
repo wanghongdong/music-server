@@ -49,9 +49,8 @@ public class ListSongController {
 
     //    返回歌单里指定歌单ID的歌曲
     @RequestMapping(value = "/listSong/detail", method = RequestMethod.GET)
-    public Object listSongOfSongId(HttpServletRequest req) {
-        String songListId = req.getParameter("songListId");
-        return listSongService.listSongOfSongId(Integer.parseInt(songListId));
+    public Object listSongOfSongId(Integer songListId) {
+        return listSongService.listSongOfSongId(songListId);
     }
 
     //    删除歌单里的歌曲

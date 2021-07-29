@@ -16,6 +16,6 @@ public interface ConsumerExMapper extends ConsumerMapper {
 
     List<Consumer> allUser();
 
-    List<Consumer> loginStatus(String username);
+    Consumer loginStatus(String username);
 
 }

@@ -7,12 +7,12 @@
     <select id="selectScoreSum" resultType="java.lang.Integer">
         SELECT COALESCE(sum(score), 0) as score
         from rank
-        where song_list_id = #{songListId};
+        where song_list_id = #{songListId}
     </select>
 
     <select id="selectRankNum" resultType="java.lang.Integer">
         SELECT COALESCE(count(id), 0) as num
         from rank
-        where song_list_id = #{songListId};
+        where song_list_id = #{songListId}
     </select>
 </mapper>

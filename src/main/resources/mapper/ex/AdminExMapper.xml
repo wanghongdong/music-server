@@ -12,6 +12,6 @@
         SELECT count(*)
         FROM admin
         where name = #{0}
-          and password = #{1};
+          and password = #{1}
     </select>
 </mapper>

@@ -1,14 +1,12 @@
 package com.example.music.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.example.music.domain.Collect;
+import com.example.music.response.RestErrorCode;
+import com.example.music.response.RestResponse;
 import com.example.music.service.impl.CollectServiceImpl;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,97 +14,94 @@ import java.util.Date;
 
 @RestController
 @RequestMapping("/collection")
-public class CollectController {
+public class CollectController implements BaseController {
 
     @Autowired
     private CollectServiceImpl collectService;
 
-    //添加收藏的歌曲
+    /**
+     * 添加收藏的歌曲
+     *
+     * @return java.lang.Object
+     * @author wanghongdong
+     * @date 2021/7/29 10:25
+     **/
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Object addCollection(HttpServletRequest req) {
-
-        JSONObject jsonObject = new JSONObject();
-        String user_id = req.getParameter("userId");
-        String comment = req.getParameter("type");
-        String song_id = req.getParameter("songId");
-        String song_list_id = req.getParameter("songListId");
-        String type = req.getParameter("type");
-        if (StringUtils.isBlank(song_id)) {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "收藏歌曲为空");
-            return jsonObject;
-        } else if (collectService.existSongId(Integer.parseInt(user_id), Integer.parseInt(song_id))) {
-            jsonObject.put("code", 2);
-            jsonObject.put("msg", "已收藏");
-            return jsonObject;
-        }
-        Collect collect = new Collect();
-        collect.setUserId(Integer.parseInt(user_id));
-        collect.setType(new Byte(type));
-        if (new Byte(type) == 0) {
-            collect.setSongId(Integer.parseInt(song_id));
-        } else if (new Byte(type) == 1) {
-            collect.setSongListId(Integer.parseInt(song_list_id));
-        }
+        Collect collect = this.toPojo(req, Collect.class);
         collect.setCreateTime(new Date());
+        if (collect.getSongId() == null) {
+            return RestResponse.fail("收藏歌曲为空");
+        } else {
+            boolean existSongId = collectService.existSongId(collect.getUserId(), collect.getSongId());
+            if (existSongId) {
+                return RestResponse.fail(RestErrorCode.COLLECTED);
+            }
+        }
         boolean res = collectService.addCollection(collect);
         if (res) {
-            jsonObject.put("code", 1);
-            jsonObject.put("msg", "收藏成功");
-            return jsonObject;
+            return RestResponse.success("收藏成功");
         } else {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "收藏失败");
-            return jsonObject;
+            return RestResponse.fail("收藏失败");
         }
     }
 
-    //    返回所有用户收藏列表
+    /**
+     * 返回所有用户收藏列表
+     *
+     * @return java.lang.Object
+     * @author wanghongdong
+     * @date 2021/7/29 10:26
+     **/
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public Object allCollection() {
-        return collectService.allCollect();
+    public RestResponse allCollection() {
+        return RestResponse.success(collectService.allCollect());
     }
 
-    //    返回的指定用户ID收藏列表
+    /**
+     * 返回的指定用户ID收藏列表
+     * @author wanghongdong
+     * @date 2021/7/29 10:33
+     * @param userId 用户id
+     * @return java.lang.Object
+    **/
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
-    public Object collectionOfUser(HttpServletRequest req) {
-        String userId = req.getParameter("userId");
-        return collectService.collectionOfUser(Integer.parseInt(userId));
+    public Object detail(Integer userId) {
+        return RestResponse.success(collectService.collectionOfUser(userId));
     }
 
-    //    删除收藏的歌曲
+    /**
+     * 删除收藏的歌曲
+     * @author wanghongdong
+     * @date 2021/7/29 10:34
+     * @param userId 用户id
+     * @param songId 歌曲id
+     * @return java.lang.Object
+    **/
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
-    public Object deleteCollection(HttpServletRequest req) {
-        String user_id = req.getParameter("userId").trim();
-        String song_id = req.getParameter("songId").trim();
-        return collectService.deleteCollect(Integer.parseInt(user_id), Integer.parseInt(song_id));
+    public Object deleteCollection(Integer userId, Integer songId) {
+        boolean deleteCollect = collectService.deleteCollect(userId, songId);
+        if (deleteCollect){
+            return RestResponse.success(null);
+        }else{
+            return RestResponse.fail("取消收藏失败");
+        }
     }
 
-    //    更新收藏
+    /**
+     * 更新收藏
+     * @author wanghongdong
+     * @date 2021/7/29 10:38
+     * @return java.lang.Object
+    **/
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public Object updateCollectMsg(HttpServletRequest req) {
-        JSONObject jsonObject = new JSONObject();
-        String id = req.getParameter("id").trim();
-        String user_id = req.getParameter("userId").trim();
-        String type = req.getParameter("type").trim();
-        String song_id = req.getParameter("songId").trim();
-//        String song_list_id = req.getParameter("songListId").trim();
-
-        Collect collect = new Collect();
-        collect.setId(Integer.parseInt(id));
-        collect.setUserId(Integer.parseInt(user_id));
-        collect.setType(new Byte(type));
-        collect.setSongId(Integer.parseInt(song_id));
-
+        Collect collect = toPojo(req, Collect.class);
         boolean res = collectService.updateCollectMsg(collect);
         if (res) {
-            jsonObject.put("code", 1);
-            jsonObject.put("msg", "修改成功");
-            return jsonObject;
+            return RestResponse.success("修改成功");
         } else {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "修改失败");
-            return jsonObject;
+            return RestResponse.fail("修改失败");
         }
     }
 }

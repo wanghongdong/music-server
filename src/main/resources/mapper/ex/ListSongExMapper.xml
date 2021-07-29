@@ -12,7 +12,7 @@
         from list_song
     </select>
     <select id="listSongOfSongId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-        select *
+        select
         <include refid="Base_Column_List"/>
         from list_song
         where song_list_id = #{songListId, jdbcType=INTEGER}

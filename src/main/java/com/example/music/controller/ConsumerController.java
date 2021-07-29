@@ -1,15 +1,19 @@
 package com.example.music.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.music.bean.ConsumerDTO;
+import com.example.music.response.RestResponse;
 import com.example.music.domain.Consumer;
 import com.example.music.service.impl.ConsumerServiceImpl;
-import com.example.music.constant.Constants;
+import com.example.music.util.BeanUtil;
+import com.example.music.util.DateUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -20,106 +24,69 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @RestController
-public class ConsumerController {
+public class ConsumerController implements BaseController {
 
     @Autowired
     private ConsumerServiceImpl consumerService;
 
-
-    //    添加用户
+    /**
+     * 用户注册
+     *
+     * @return java.lang.Object
+     * @author wanghongdong
+     * @date 2021/7/28 16:16
+     **/
     @RequestMapping(value = "/user/add", method = RequestMethod.POST)
     public Object addUser(HttpServletRequest req) {
-        JSONObject jsonObject = new JSONObject();
-        String username = req.getParameter("username").trim();
-        String password = req.getParameter("password").trim();
-        String sex = req.getParameter("sex").trim();
-        String phone_num = req.getParameter("phone_num").trim();
-        String email = req.getParameter("email").trim();
-        String birth = req.getParameter("birth").trim();
-        String introduction = req.getParameter("introduction").trim();
-        String location = req.getParameter("location").trim();
-        String avatar = req.getParameter("avatar").trim();
-
-        if (username.equals("") || username == null) {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "用户名或密码错误");
-            return jsonObject;
+        ConsumerDTO dto = toPojo(req, ConsumerDTO.class);
+        if (StringUtils.isBlank(dto.getUsername())) {
+            return RestResponse.fail("用户名不能为空");
         }
-        Consumer consumer = new Consumer();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date myBirth = new Date();
-        try {
-            myBirth = dateFormat.parse(birth);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        consumer.setUsername(username);
-        consumer.setPassword(password);
-        consumer.setSex(new Byte(sex));
-        if (phone_num == "") {
-            consumer.setPhoneNum(null);
-        } else {
-            consumer.setPhoneNum(phone_num);
-        }
-
-        if (email == "") {
-            consumer.setEmail(null);
-        } else {
-            consumer.setEmail(email);
-        }
-        consumer.setBirth(myBirth);
-        consumer.setIntroduction(introduction);
-        consumer.setLocation(location);
-        consumer.setAvatar(avatar);
-        consumer.setCreateTime(new Date());
-        consumer.setUpdateTime(new Date());
-
-        boolean res = consumerService.addUser(consumer);
+        dto.setBirth(DateUtils.toDate(dto.getBirthStr()));
+        dto.setCreateTime(new Date());
+        dto.setUpdateTime(new Date());
+        boolean res = consumerService.addUser(BeanUtil.copyObject(dto, Consumer.class));
         if (res) {
-            jsonObject.put("code", 1);
-            jsonObject.put("msg", "注册成功");
-            return jsonObject;
+            return RestResponse.success("注册成功");
         } else {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "注册失败");
-            return jsonObject;
+            return RestResponse.fail("注册失败");
         }
     }
 
-    //    判断是否登录成功
+    /**
+     * 判断是否登录成功
+     *
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/28 16:18
+     **/
     @RequestMapping(value = "/user/login/status", method = RequestMethod.POST)
-    public Object loginStatus(HttpServletRequest req, HttpSession session) {
-
-        JSONObject jsonObject = new JSONObject();
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
+    public RestResponse loginStatus(String username, String password, HttpSession session) {
         boolean res = consumerService.verifyPassword(username, password);
-
         if (res) {
-            jsonObject.put("code", 1);
-            jsonObject.put("msg", "登录成功");
-            jsonObject.put("userMsg", consumerService.loginStatus(username));
             session.setAttribute("username", username);
-            return jsonObject;
+            return RestResponse.success("登录成功", consumerService.loginStatus(username));
         } else {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "用户名或密码错误");
-            return jsonObject;
+            return RestResponse.fail("用户名或密码错误");
         }
-
     }
 
-    //    返回所有用户
+    /**
+     * 返回所有用户
+     * @author wanghongdong
+     * @date 2021/7/28 16:21
+     * @return java.lang.Object
+    **/
     @RequestMapping(value = "/user", method = RequestMethod.GET)
-    public Object allUser() {
-        return consumerService.allUser();
+    public RestResponse allUser() {
+        return RestResponse.success(consumerService.allUser());
     }
 
     //    返回指定ID的用户
     @RequestMapping(value = "/user/detail", method = RequestMethod.GET)
-    public Object userOfId(HttpServletRequest req) {
-        String id = req.getParameter("id");
-        return consumerService.userOfId(Integer.parseInt(id));
+    public Object userOfId(Integer id) {
+        Consumer consumer = consumerService.userOfId(id);
+        return RestResponse.success(consumer);
     }
 
     //    删除用户

@@ -37,7 +37,6 @@ public class ConsumerServiceImpl implements ConsumerService {
 
     @Override
     public boolean verifyPassword(String username, String password) {
-
         return consumerMapper.verifyPassword(username, password) > 0;
     }
 
@@ -58,7 +57,7 @@ public class ConsumerServiceImpl implements ConsumerService {
     }
 
     @Override
-    public List<Consumer> loginStatus(String username) {
+    public Consumer loginStatus(String username) {
         return consumerMapper.loginStatus(username);
     }
 }

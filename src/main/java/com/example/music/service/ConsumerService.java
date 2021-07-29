@@ -22,6 +22,6 @@ public interface ConsumerService {
 
     Consumer userOfId(Integer id);
 
-    List<Consumer> loginStatus(String username);
+    Consumer loginStatus(String username);
 
 }
