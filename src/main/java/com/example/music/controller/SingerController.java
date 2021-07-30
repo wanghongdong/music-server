@@ -1,176 +1,162 @@
 package com.example.music.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.example.music.constant.Constants;
+import com.example.music.bean.SingerDTO;
 import com.example.music.domain.Singer;
+import com.example.music.response.RestResponse;
 import com.example.music.service.impl.SingerServiceImpl;
+import com.example.music.util.DateUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
+@Slf4j
 @RestController
-public class SingerController {
+public class SingerController implements BaseController {
 
     @Autowired
     private SingerServiceImpl singerService;
 
-    //    添加歌手
+    /**
+     * 添加歌手
+     *
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/30 09:00
+     **/
     @RequestMapping(value = "/singer/add", method = RequestMethod.POST)
-    public Object addSinger(HttpServletRequest req) {
-        JSONObject jsonObject = new JSONObject();
-        String name = req.getParameter("name").trim();
-        String sex = req.getParameter("sex").trim();
-        String pic = req.getParameter("pic").trim();
-        String birth = req.getParameter("birth").trim();
-        String location = req.getParameter("location").trim();
-        String introduction = req.getParameter("introduction").trim();
-
-        Singer singer = new Singer();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date myBirth = new Date();
-        try {
-            myBirth = dateFormat.parse(birth);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        singer.setName(name);
-        singer.setSex(new Byte(sex));
-        singer.setPic(pic);
-        singer.setBirth(myBirth);
-        singer.setLocation(location);
-        singer.setIntroduction(introduction);
-
+    public RestResponse addSinger(HttpServletRequest req) {
+        SingerDTO singer = toPojo(req, SingerDTO.class);
+        singer.setBirth(DateUtils.toDate(singer.getBirthStr()));
         boolean res = singerService.addSinger(singer);
         if (res) {
-            jsonObject.put("code", 1);
-            jsonObject.put("msg", "添加成功");
-            return jsonObject;
+            return RestResponse.success("添加成功");
         } else {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "添加失败");
-            return jsonObject;
+            return RestResponse.fail("添加失败");
         }
     }
 
-    //    返回所有歌手
+    /**
+     * 返回所有歌手
+     *
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/30 09:00
+     **/
     @RequestMapping(value = "/singer", method = RequestMethod.GET)
-    public Object allSinger() {
-        return singerService.allSinger();
+    public RestResponse allSinger() {
+        return RestResponse.success(singerService.allSinger());
     }
 
-    //    根据歌手名查找歌手
+    /**
+     * 根据歌手名查找歌手
+     *
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/30 09:00
+     **/
     @RequestMapping(value = "/singer/name/detail", method = RequestMethod.GET)
-    public Object singerOfName(HttpServletRequest req) {
-        String name = req.getParameter("name").trim();
-        return singerService.singerOfName(name);
+    public RestResponse singerOfName(String name) {
+        return RestResponse.success(singerService.singerOfName(name));
     }
 
-    //    根据歌手性别查找歌手
+    /**
+     * 根据歌手性别查找歌手
+     *
+     * @param sex 性别，0：女 1：男
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/30 09:01
+     **/
     @RequestMapping(value = "/singer/sex/detail", method = RequestMethod.GET)
-    public Object singerOfSex(HttpServletRequest req) {
-        String sex = req.getParameter("sex").trim();
-        return singerService.singerOfSex(Integer.parseInt(sex));
+    public RestResponse singerOfSex(Integer sex) {
+        return RestResponse.success(singerService.singerOfSex(sex));
     }
 
-    //    删除歌手
+    /**
+     * 删除歌手
+     *
+     * @param id 歌手id
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/30 09:03
+     **/
     @RequestMapping(value = "/singer/delete", method = RequestMethod.GET)
-    public Object deleteSinger(HttpServletRequest req) {
-        String id = req.getParameter("id");
-        return singerService.deleteSinger(Integer.parseInt(id));
+    public RestResponse deleteSinger(Integer id) {
+        if (singerService.deleteSinger(id)) {
+            return RestResponse.success("删除成功");
+        } else {
+            return RestResponse.fail("删除失败");
+        }
     }
 
-    //    更新歌手信息
+    /**
+     * 更新歌手信息
+     *
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/30 09:03
+     **/
     @RequestMapping(value = "/singer/update", method = RequestMethod.POST)
-    public Object updateSingerMsg(HttpServletRequest req) {
-        JSONObject jsonObject = new JSONObject();
-        String id = req.getParameter("id").trim();
-        String name = req.getParameter("name").trim();
-        String sex = req.getParameter("sex").trim();
-        String pic = req.getParameter("pic").trim();
-        String birth = req.getParameter("birth").trim();
-        String location = req.getParameter("location").trim();
-        String introduction = req.getParameter("introduction").trim();
-
-        Singer singer = new Singer();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date myBirth = new Date();
-        try {
-            myBirth = dateFormat.parse(birth);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        singer.setId(Integer.parseInt(id));
-        singer.setName(name);
-        singer.setSex(new Byte(sex));
-        singer.setPic(pic);
-        singer.setBirth(myBirth);
-        singer.setLocation(location);
-        singer.setIntroduction(introduction);
-
+    public RestResponse updateSingerMsg(HttpServletRequest req) {
+        SingerDTO singer = toPojo(req, SingerDTO.class);
+        singer.setBirth(DateUtils.toDate(singer.getBirthStr()));
         boolean res = singerService.updateSingerMsg(singer);
         if (res) {
-            jsonObject.put("code", 1);
-            jsonObject.put("msg", "修改成功");
-            return jsonObject;
+            return RestResponse.success("添加成功");
         } else {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "修改失败");
-            return jsonObject;
+            return RestResponse.fail("修改失败");
         }
     }
 
-    //    更新歌手头像
+    /**
+     * 更新歌手头像
+     *
+     * @param avatarFile 头像图片
+     * @param id         歌手id
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/30 09:04
+     **/
     @RequestMapping(value = "/singer/avatar/update", method = RequestMethod.POST)
-    public Object updateSingerPic(@RequestParam("file") MultipartFile avatarFile, @RequestParam("id") int id) {
-        JSONObject jsonObject = new JSONObject();
-
+    public RestResponse updateSingerPic(@RequestParam("file") MultipartFile avatarFile, @RequestParam("id") int id) {
         if (avatarFile.isEmpty()) {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "文件上传失败！");
-            return jsonObject;
+            log.info("更新歌手头像失败，上传文件为空");
+            return RestResponse.fail("文件上传失败！");
         }
         String fileName = System.currentTimeMillis() + avatarFile.getOriginalFilename();
-        String filePath = System.getProperty("user.dir") + System.getProperty("file.separator") + "img" + System.getProperty("file.separator") + "singerPic";
+        String filePath = System.getProperty("user.dir") + File.separator + "img" + File.separator + "singerPic";
         File file1 = new File(filePath);
         if (!file1.exists()) {
-            file1.mkdir();
+            boolean mkdir = file1.mkdir();
+            if (!mkdir) {
+                log.info("更新歌手头像失败，文件夹未创建");
+                return RestResponse.fail("文件上传失败！");
+            }
         }
-
-        File dest = new File(filePath + System.getProperty("file.separator") + fileName);
-        String storeavatarPath = "/img/singerPic/" + fileName;
+        File dest = new File(filePath + File.separator + fileName);
+        String storeAvatarPath = "/img/singerPic/" + fileName;
         try {
             avatarFile.transferTo(dest);
             Singer singer = new Singer();
             singer.setId(id);
-            singer.setPic(storeavatarPath);
+            singer.setPic(storeAvatarPath);
             boolean res = singerService.updateSingerPic(singer);
             if (res) {
-                jsonObject.put("code", 1);
-                jsonObject.put("pic", storeavatarPath);
-                jsonObject.put("msg", "上传成功");
-                return jsonObject;
+                return RestResponse.success("上传成功", storeAvatarPath);
             } else {
-                jsonObject.put("code", 0);
-                jsonObject.put("msg", "上传失败");
-                return jsonObject;
+                return RestResponse.fail("上传失败");
             }
         } catch (IOException e) {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "上传失败" + e.getMessage());
-            return jsonObject;
-        } finally {
-            return jsonObject;
+            log.error("更新歌手头像失败", e);
+            return RestResponse.fail("上传失败");
         }
     }
 }

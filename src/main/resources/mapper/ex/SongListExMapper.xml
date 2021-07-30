@@ -21,13 +21,13 @@
         select
         <include refid="All_Column_List"/>
         from song_list
-        where title like concat(#{title,jdbcType=VARCHAR}, '%')
+        where title like concat('%', #{title,jdbcType=VARCHAR}, '%')
     </select>
     <select id="likeStyle" resultMap="ResultMapWithBLOBs">
         select
         <include refid="All_Column_List"/>
         from song_list
-        where style like concat(#{style,jdbcType=VARCHAR}, '%')
+        where style like concat('%', #{style,jdbcType=VARCHAR}, '%')
     </select>
     <select id="songListOfTitle" resultMap="ResultMapWithBLOBs">
         select

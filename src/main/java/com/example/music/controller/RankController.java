@@ -1,52 +1,48 @@
 package com.example.music.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.example.music.domain.Rank;
+import com.example.music.response.RestResponse;
 import com.example.music.service.impl.RankServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-public class RankController {
+public class RankController implements BaseController {
 
     @Autowired
     private RankServiceImpl rankService;
 
-//    提交评分
+    /**
+     * 提交评分
+     *
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/30 08:55
+     **/
     @RequestMapping(value = "/rank/add", method = RequestMethod.POST)
-    public Object addRank(HttpServletRequest req){
-        JSONObject jsonObject = new JSONObject();
-        String songListId = req.getParameter("songListId").trim();
-        String consumerId = req.getParameter("consumerId").trim();
-        String score = req.getParameter("score").trim();
-
-        Rank rank = new Rank();
-//        rank.setSongListId(Long.parseLong(songListId));
-//        rank.setConsumerId(Long.parseLong(consumerId));
-        rank.setScore(Integer.parseInt(score));
-
-        boolean res = rankService.addRank(rank);
-        if (res){
-            jsonObject.put("code", 1);
-            jsonObject.put("msg", "评价成功");
-            return jsonObject;
-        }else {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "评价失败");
-            return jsonObject;
+    public RestResponse addRank(HttpServletRequest req) {
+        Rank rank = toPojo(req, Rank.class);
+        if (rankService.addRank(rank)) {
+            return RestResponse.success("评价成功");
+        } else {
+            return RestResponse.fail("评价失败");
         }
     }
 
-//    获取指定歌单的评分
+    /**
+     * 获取指定歌单的评分
+     *
+     * @param songListId 歌单id
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/30 08:55
+     **/
     @RequestMapping(value = "/rank", method = RequestMethod.GET)
-    public Object rankOfSongListId(HttpServletRequest req){
-        String songListId = req.getParameter("songListId");
-        return rankService.rankOfSongListId(Long.parseLong(songListId));
+    public RestResponse rankOfSongListId(Long songListId) {
+        return RestResponse.success(rankService.rankOfSongListId(songListId));
     }
 }

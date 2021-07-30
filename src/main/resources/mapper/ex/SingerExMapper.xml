@@ -15,7 +15,7 @@
         select
         <include refid="Base_Column_List"/>
         from singer
-        where name like concat(#{name}, '%')
+        where name like concat('%', #{name}, '%')
     </select>
     <select id="singerOfSex" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select

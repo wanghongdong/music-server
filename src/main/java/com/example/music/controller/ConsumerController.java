@@ -1,11 +1,10 @@
 package com.example.music.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.example.music.bean.ConsumerDTO;
-import com.example.music.response.RestResponse;
+import com.example.music.constant.Constants;
 import com.example.music.domain.Consumer;
+import com.example.music.response.RestResponse;
 import com.example.music.service.impl.ConsumerServiceImpl;
-import com.example.music.util.BeanUtil;
 import com.example.music.util.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @RestController
@@ -32,12 +29,12 @@ public class ConsumerController implements BaseController {
     /**
      * 用户注册
      *
-     * @return java.lang.Object
+     * @return com.example.music.response.RestResponse
      * @author wanghongdong
      * @date 2021/7/28 16:16
      **/
     @RequestMapping(value = "/user/add", method = RequestMethod.POST)
-    public Object addUser(HttpServletRequest req) {
+    public RestResponse addUser(HttpServletRequest req) {
         ConsumerDTO dto = toPojo(req, ConsumerDTO.class);
         if (StringUtils.isBlank(dto.getUsername())) {
             return RestResponse.fail("用户名不能为空");
@@ -45,7 +42,7 @@ public class ConsumerController implements BaseController {
         dto.setBirth(DateUtils.toDate(dto.getBirthStr()));
         dto.setCreateTime(new Date());
         dto.setUpdateTime(new Date());
-        boolean res = consumerService.addUser(BeanUtil.copyObject(dto, Consumer.class));
+        boolean res = consumerService.addUser(dto);
         if (res) {
             return RestResponse.success("注册成功");
         } else {
@@ -73,123 +70,109 @@ public class ConsumerController implements BaseController {
 
     /**
      * 返回所有用户
+     *
+     * @return com.example.music.response.RestResponse
      * @author wanghongdong
      * @date 2021/7/28 16:21
-     * @return java.lang.Object
-    **/
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
+     **/
+    @RequestMapping(value = "/user")
     public RestResponse allUser() {
         return RestResponse.success(consumerService.allUser());
     }
 
-    //    返回指定ID的用户
-    @RequestMapping(value = "/user/detail", method = RequestMethod.GET)
-    public Object userOfId(Integer id) {
+    /**
+     * 返回指定ID的用户
+     *
+     * @param id 用户id
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/29 14:27
+     **/
+    @RequestMapping(value = "/user/detail")
+    public RestResponse userOfId(Integer id) {
         Consumer consumer = consumerService.userOfId(id);
         return RestResponse.success(consumer);
     }
 
-    //    删除用户
-    @RequestMapping(value = "/user/delete", method = RequestMethod.GET)
-    public Object deleteUser(HttpServletRequest req) {
-        String id = req.getParameter("id");
-        return consumerService.deleteUser(Integer.parseInt(id));
+    /**
+     * 删除用户
+     *
+     * @param id 用户id
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/29 14:27
+     **/
+    @RequestMapping(value = "/user/delete")
+    public RestResponse deleteUser(Integer id) {
+        if (consumerService.deleteUser(id)) {
+            return RestResponse.success("删除失败");
+        } else {
+            return RestResponse.fail("删除成功");
+        }
     }
 
-    //    更新用户信息
+    /**
+     * 更新用户信息
+     *
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/29 14:27
+     **/
     @RequestMapping(value = "/user/update", method = RequestMethod.POST)
-    public Object updateUserMsg(HttpServletRequest req) {
-        JSONObject jsonObject = new JSONObject();
-        String id = req.getParameter("id").trim();
-        String username = req.getParameter("username").trim();
-        String password = req.getParameter("password").trim();
-        String sex = req.getParameter("sex").trim();
-        String phone_num = req.getParameter("phone_num").trim();
-        String email = req.getParameter("email").trim();
-        String birth = req.getParameter("birth").trim();
-        String introduction = req.getParameter("introduction").trim();
-        String location = req.getParameter("location").trim();
-        // String avatar = req.getParameter("avatar").trim();
-        // System.out.println(username+"  "+password+"  "+sex+"   "+phone_num+"     "+email+"      "+birth+"       "+introduction+"      "+location);
-
-        if (username.equals("") || username == null) {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "用户名或密码错误");
-            return jsonObject;
+    public RestResponse updateUserMsg(HttpServletRequest req) {
+        ConsumerDTO consumer = toPojo(req, ConsumerDTO.class);
+        if (StringUtils.isBlank(consumer.getUsername())) {
+            return RestResponse.fail("用户名或密码错误");
         }
-        Consumer consumer = new Consumer();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date myBirth = new Date();
-        try {
-            myBirth = dateFormat.parse(birth);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        consumer.setId(Integer.parseInt(id));
-        consumer.setUsername(username);
-        consumer.setPassword(password);
-        consumer.setSex(new Byte(sex));
-        consumer.setPhoneNum(phone_num);
-        consumer.setEmail(email);
-        consumer.setBirth(myBirth);
-        consumer.setIntroduction(introduction);
-        consumer.setLocation(location);
-        // consumer.setavatar(avatar);
+        consumer.setBirth(DateUtils.toDate(consumer.getBirthStr()));
         consumer.setUpdateTime(new Date());
 
-        boolean res = consumerService.updateUserMsg(consumer);
-        if (res) {
-            jsonObject.put("code", 1);
-            jsonObject.put("msg", "修改成功");
-            return jsonObject;
+        if (consumerService.updateUserMsg(consumer)) {
+            return RestResponse.success("修改成功");
         } else {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "修改失败");
-            return jsonObject;
+            return RestResponse.fail("修改失败");
         }
     }
 
-    //    更新用户头像
+    /**
+     * 更新用户头像
+     *
+     * @param avatarFile 用户头像
+     * @param id         用户id
+     * @return com.example.music.response.RestResponse
+     * @author wanghongdong
+     * @date 2021/7/29 14:27
+     **/
     @RequestMapping(value = "/user/avatar/update", method = RequestMethod.POST)
-    public Object updateUserPic(@RequestParam("file") MultipartFile avatarFile, @RequestParam("id") int id) {
-        JSONObject jsonObject = new JSONObject();
+    public RestResponse updateUserPic(@RequestParam("file") MultipartFile avatarFile, @RequestParam("id") int id) {
 
         if (avatarFile.isEmpty()) {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "文件上传失败！");
-            return jsonObject;
+            return RestResponse.fail("文件上传失败！");
         }
         String fileName = System.currentTimeMillis() + avatarFile.getOriginalFilename();
-        String filePath = System.getProperty("user.dir") + System.getProperty("file.separator") + "avatarImages";
+        String filePath = System.getProperty("user.dir") + File.separator + Constants.IMG_AVATAR_PATH;
         File file1 = new File(filePath);
         if (!file1.exists()) {
-            file1.mkdir();
+            if (!file1.mkdir()) {
+                log.info("更新用户头像失败，文件夹未创建");
+                return RestResponse.fail("文件上传失败！");
+            }
         }
-
-        File dest = new File(filePath + System.getProperty("file.separator") + fileName);
-        String storeAvatarPath = "/avatarImages/" + fileName;
+        String storeAvatarPath = Constants.IMG_AVATAR_PATH + File.separator + fileName;
+        File dest = new File(filePath + File.separator + fileName);
         try {
             avatarFile.transferTo(dest);
             Consumer consumer = new Consumer();
             consumer.setId(id);
             consumer.setAvatar(storeAvatarPath);
-            boolean res = consumerService.updateUserAvatar(consumer);
-            if (res) {
-                jsonObject.put("code", 1);
-                jsonObject.put("avatar", storeAvatarPath);
-                jsonObject.put("msg", "上传成功");
-                return jsonObject;
+            if (consumerService.updateUserAvatar(consumer)) {
+                return RestResponse.success("上传成功", storeAvatarPath);
             } else {
-                jsonObject.put("code", 0);
-                jsonObject.put("msg", "上传失败");
-                return jsonObject;
+                return RestResponse.fail("上传失败");
             }
         } catch (IOException e) {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "上传失败" + e.getMessage());
-            return jsonObject;
-        } finally {
-            return jsonObject;
+            log.error("更新用户头像失败", e);
+            return RestResponse.fail("上传失败");
         }
     }
 }

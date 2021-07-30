@@ -22,7 +22,7 @@ public class CollectController implements BaseController {
     /**
      * 添加收藏的歌曲
      *
-     * @return java.lang.Object
+     * @return com.example.music.response.RestResponse
      * @author wanghongdong
      * @date 2021/7/29 10:25
      **/
@@ -49,7 +49,7 @@ public class CollectController implements BaseController {
     /**
      * 返回所有用户收藏列表
      *
-     * @return java.lang.Object
+     * @return com.example.music.response.RestResponse
      * @author wanghongdong
      * @date 2021/7/29 10:26
      **/
@@ -63,10 +63,10 @@ public class CollectController implements BaseController {
      * @author wanghongdong
      * @date 2021/7/29 10:33
      * @param userId 用户id
-     * @return java.lang.Object
+     * @return com.example.music.response.RestResponse
     **/
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
-    public Object detail(Integer userId) {
+    public RestResponse detail(Integer userId) {
         return RestResponse.success(collectService.collectionOfUser(userId));
     }
 
@@ -76,10 +76,10 @@ public class CollectController implements BaseController {
      * @date 2021/7/29 10:34
      * @param userId 用户id
      * @param songId 歌曲id
-     * @return java.lang.Object
+     * @return com.example.music.response.RestResponse
     **/
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
-    public Object deleteCollection(Integer userId, Integer songId) {
+    public RestResponse deleteCollection(Integer userId, Integer songId) {
         boolean deleteCollect = collectService.deleteCollect(userId, songId);
         if (deleteCollect){
             return RestResponse.success(null);
@@ -92,10 +92,10 @@ public class CollectController implements BaseController {
      * 更新收藏
      * @author wanghongdong
      * @date 2021/7/29 10:38
-     * @return java.lang.Object
+     * @return com.example.music.response.RestResponse
     **/
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public Object updateCollectMsg(HttpServletRequest req) {
+    public RestResponse updateCollectMsg(HttpServletRequest req) {
         Collect collect = toPojo(req, Collect.class);
         boolean res = collectService.updateCollectMsg(collect);
         if (res) {

@@ -1,13 +1,28 @@
 package com.example.music.constant;
 
 public class Constants {
-//    // MAC、Linux系统
-//    public static final String RESOURCE_MAC_PATH = "/Users/hongweiyin/Documents/github-workspace/music-website/music-server";
-//
-//    // windows系统
-//    public static final String RESOURCE_WIN_PATH = "C:\\Users\\hongweiyin\\Documents\\github-workspace\\music-website\\music-server";
-//
-    public static final String IMG_PATH_PATTERNS = "/img/**";
-
-    public static final String SONG_PATH_PATTERNS = "/song/**";
+    /**
+     * 用户头像目录
+     */
+    public static final String IMG_PATH = "/img/";
+    /**
+     * 用户头像目录
+     */
+    public static final String IMG_AVATAR_PATH = "/img/avatarImages/";
+    /**
+     * 歌手头像目录
+     */
+    public static final String IMG_SINGER_PATH = "/img/singerPic/";
+    /**
+     * 歌单图片目录
+     */
+    public static final String IMG_SONG_LIST_PATH = "/img/songListPic/";
+    /**
+     * 歌曲图片目录
+     */
+    public static final String IMG_SONG_PATH = "/img/songPic/";
+    /**
+     * 歌曲目录
+     */
+    public static final String SONG_PATH = "/song/";
 }

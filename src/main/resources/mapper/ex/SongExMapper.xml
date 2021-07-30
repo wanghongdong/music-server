@@ -27,12 +27,12 @@
         select
         <include refid="All_Column_List"/>
         from song
-        where exists(select 1 from singer where singer.id = singer_id and singer.name like concat(#{singerName}, '%'))
+        where exists(select 1 from singer where singer.id = singer_id and singer.name like concat('%', #{singerName}, '%'))
     </select>
     <select id="songOfName" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="All_Column_List"/>
         from song
-        where name like concat(#{name, jdbcType=VARCHAR}, '%')
+        where name like concat('%', #{name, jdbcType=VARCHAR}, '%')
     </select>
 </mapper>
