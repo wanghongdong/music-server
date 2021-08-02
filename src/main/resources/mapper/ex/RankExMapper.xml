@@ -5,13 +5,25 @@
                extends="com.example.music.dao.RankMapper.BaseResultMap"/>
 
     <select id="selectScoreSum" resultType="java.lang.Integer">
-        SELECT COALESCE(sum(score), 0) as score
+        SELECT sum(score) as score
         from rank
-        where song_list_id = #{songListId}
+        where 1 = 1
+        <if test="songListId!=null and songListId !=0">
+            and song_list_id = #{songListId}
+        </if>
+        <if test="consumerId!=null and consumerId !=0">
+            and consumer_id = #{consumerId}
+        </if>
     </select>
 
     <select id="selectRankNum" resultType="java.lang.Integer">
         SELECT COALESCE(count(id), 0) as num
+        from rank
+        where song_list_id = #{songListId}
+    </select>
+
+    <select id="selectSongListRank" resultType="java.lang.Integer">
+        SELECT sum(score) / COALESCE(count(id), 0)
         from rank
         where song_list_id = #{songListId}
     </select>

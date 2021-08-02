@@ -7,4 +7,6 @@ public interface RankService {
     int rankOfSongListId(Long songListId);
 
     boolean addRank(Rank rank);
+
+    int getSongListRankByUser(Long songListId, Long consumerId);
 }

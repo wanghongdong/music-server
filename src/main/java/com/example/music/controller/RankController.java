@@ -41,8 +41,13 @@ public class RankController implements BaseController {
      * @author wanghongdong
      * @date 2021/7/30 08:55
      **/
-    @RequestMapping(value = "/rank", method = RequestMethod.GET)
+    @RequestMapping(value = "/rank")
     public RestResponse rankOfSongListId(Long songListId) {
         return RestResponse.success(rankService.rankOfSongListId(songListId));
+    }
+
+    @RequestMapping(value = "/rank/getSongListRankByUser")
+    public RestResponse getSongListRankByUser(Long songListId, Long consumerId) {
+        return RestResponse.success(rankService.getSongListRankByUser(songListId, consumerId));
     }
 }

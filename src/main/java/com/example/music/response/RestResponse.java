@@ -22,10 +22,13 @@ public class RestResponse {
 
     private Object data;
 
+    private boolean success;
+
     public RestResponse(int code, String msg, Object data){
         this.code = code;
         this.msg = msg;
         this.data = data;
+        this.success = code == SUCCESS;
     }
 
     public static RestResponse success(Object data){
